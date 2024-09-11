@@ -1,0 +1,589 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="author" content="Untree.co">
+	<link rel="shortcut icon" href="favicon.png">
+	<title>DDC-BDS</title>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+	<meta name="description" content="" />
+	<meta name="keywords" content="bootstrap, bootstrap5" />
+	
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+
+	<link rel="stylesheet" href="http://127.0.0.1:5000/static/fonts/icomoon/style.css">
+	<link rel="stylesheet" href="http://127.0.0.1:5000/static/fonts/flaticon/font/flaticon.css">
+
+	<link rel="stylesheet" href="http://127.0.0.1:5000/static/css/tiny-slider.css">
+	<link rel="stylesheet" href="http://127.0.0.1:5000/static/css/aos.css">
+	<link rel="stylesheet" href="http://127.0.0.1:5000/static/css/style.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<!-- MarkerCluster -->
+	<script src="http://127.0.0.1:5000/static/js/leaflet.markercluster-src.js"></script>
+	<link rel="stylesheet" href="http://127.0.0.1:5000/static/css/MarkerCluster.css">
+	<link rel="stylesheet" href="http://127.0.0.1:5000/static/css/MarkerCluster.Default.css">
+	<!-- Search -->
+	<link rel="stylesheet" href="http://127.0.0.1:5000/static/css/leaflet-search.css">
+	<script src="http://127.0.0.1:5000/static/js/leaflet-search.js"></script>
+	<!-- Chỉ đường -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/perliedman-leaflet-control-geocoder/2.4.0/Control.Geocoder.min.js" ></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/perliedman-leaflet-control-geocoder/2.4.0/Control.Geocoder.min.css "></script>
+	<!-- Vị trí hiện tại -->
+	<script src="http://127.0.0.1:5000/static/js/L.Control.Locate.js"></script>
+	<link rel="stylesheet" href="http://127.0.0.1:5000/static/css/L.Control.Locate.min.css">
+	<!-- Toàn màn hình -->
+	<script src="http://127.0.0.1:5000/static/js/Control.FullScreen.js"></script>
+	<link rel="stylesheet" href="http://127.0.0.1:5000/static/css/Control.FullScreen.css">	
+</head>
+<body>
+
+	{% extends 'menu.html' %}
+{% block body %}
+	<div class="hero">
+
+
+		<div class="hero-slide">
+			<div class="img overlay" style="background-image: url('http://127.0.0.1:5000/static/images/hero_bg_3.jpg')"></div>
+			<div class="img overlay" style="background-image: url('http://127.0.0.1:5000/static/images/hero_bg_2.jpg')"></div>
+			<div class="img overlay" style="background-image: url('http://127.0.0.1:5000/static/images/hero_bg_1.jpg')"></div>
+			<!-- <div style="width: 100%; height: 200px;background-color: aqua;"></div> -->
+		</div>
+
+		<div class="container">
+			<div class="row justify-content-center align-items-center">
+				<div class="col-lg-9 text-center">
+					<h1 class="heading" data-aos="fade-up">Tìm Trung Cư,Căn Cộ với Một Cú Cick Chuột</h1>
+					<!-- <form action="#" class="narrow-w form-search d-flex align-items-stretch mb-3" data-aos="fade-up" data-aos-delay="200">
+						<input type="text" class="form-control px-4" placeholder="Địa chỉ bạn muốn tìm">
+						<button type="submit" class="btn btn-primary">Search</button>
+					</form> -->
+				</div>
+			</div>
+		</div>
+	</div>
+	<div style="margin: 10px 10px;"><h1 style="text-align: center;">Tìm kiếm bằng địa chỉ</h1></div>
+	<div id="map" style="width: 800px;height: 600px;margin: auto;"></div>
+	<script>
+		var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href = "https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'});
+        // var mymap = L.map('map', {zoom:4}).setView([20.99740692788566,105.86875554174186], 10);
+		var mymap = L.map('map', {
+			layers: [osm],
+			tap: false, // ref https://github.com/Leaflet/Leaflet/issues/7255
+			center: new L.LatLng(20.99740692788566,105.86875554174186),
+			zoom: 10,
+			fullscreenControl: true,
+			fullscreenControlOptions: { // optional
+				title:"Show me the fullscreen !",
+				titleCancel:"Exit fullscreen mode"
+			}
+		});
+		
+        
+
+		mymap.on('enterFullscreen', function(){
+			if(window.console) window.console.log('enterFullscreen');
+		});
+		mymap.on('exitFullscreen', function(){
+			if(window.console) window.console.log('exitFullscreen');
+		});
+		$.ajax({
+			url: "http://localhost:5000/api/v1/motels",
+			dataType : "json",
+			async : false,
+			success : function(data) {
+				geojson = data;
+			}
+		});
+		function showFeatureInfor(feature, layer) {
+            if (feature.properties) {
+                layer.bindPopup("<b>Tên: " + feature.properties.name + "</b><br><b>Địa chỉ: " + feature.properties.address + "</b><br><a href='http://localhost:5000/property_single/"+ feature.properties.id +"'>Xem chi tiết</a>");
+            }
+            
+        };
+		var HomeTest = L.icon({
+            iconUrl: "http://localhost:5000/static/images/home.png",
+            iconSize: [25,25],
+            //iconAnchor: [10,10],
+            popupAnchor: [-3,-15]
+        });
+		// Thêm cụm
+		var cluster_motels = L.markerClusterGroup();
+		var motels = L.geoJSON(geojson,{
+			onEachFeature : showFeatureInfor,
+			pointToLayer: function (feature, latlng){
+				return L.marker(latlng, {icon: HomeTest})
+			} 
+		}).addTo(cluster_motels);
+		cluster_motels.addTo(mymap);
+		// Tìm kiếm 
+		var motelPointLayers = L.layerGroup([
+      		cluster_motels
+  		]);
+		L.control.search({
+  			layer: motelPointLayers,
+  			initial: false, 
+  			propertyName: 'address',
+      		zoom: 16,
+  			buildTip: function(text, val) {
+  				return '<a href="#" >'+text+'</a>';
+  			}
+  		}).addTo(mymap);
+		// Ví trí hiện tại
+		var locate = L.control.locate({
+			strings: {
+				title: "Chỉ đến vị trí của bạn!",
+				popup: "Đây là vị trí hiện tại!"
+			}
+		}).addTo(mymap);
+		// Chỉ đường
+		// // Bước 1: Sử dụng plugin Leaflet.locate để lấy vị trí định vị hiện tại
+		mymap.locate();
+
+		// Bước 2: Xử lý sự kiện "locationfound" để lấy vị trí định vị
+		mymap.on('locationfound', function(e) {
+		var lat = e.latlng.lat;
+		var lng = e.latlng.lng;
+
+		// Bước 3: Xử lý sự kiện click trên bản đồ
+		mymap.on('click', function(e) {
+			var destLat = e.latlng.lat;
+			var destLng = e.latlng.lng;
+
+		// Bước 4: Đặt vị trí định vị là điểm xuất phát và vị trí click là điểm đến trong Leaflet Routing Machine
+		control.setWaypoints([
+			L.latLng(lat, lng), // Điểm xuất phát
+			L.latLng(destLat, destLng) // Điểm đến
+			]);
+			});
+		});
+
+		// Bước 5: Tạo điểm đến ban đầu trên bản đồ
+		var control = L.Routing.control({
+		waypoints: [
+			L.latLng(), // Điểm xuất phát, có thể là vị trí định vị hiện tại hoặc điểm mặc định khác
+			L.latLng() // Điểm đến ban đầu, có thể là điểm mặc định hoặc không có
+		],
+		routeWhileDragging: true,
+		geocoder: L.Control.Geocoder.nominatim()
+		}).addTo(mymap);
+
+		// Bước 6: Xử lý sự kiện khi có chỉ đường được tính toán
+		control.on('routeselected', function(e) {
+			var routes = e.route.routes;
+			// Xử lý dữ liệu chỉ đường đã tính toán
+		});
+		
+	</script>
+
+	<div class="section">
+		<div class="container">
+			<div class="row mb-5 align-items-center">
+				<div class="col-lg-6">
+					<h2 class="font-weight-bold text-primary heading">Căn Hộ Nổi Bật </h2>
+				</div>
+				<div class="col-lg-6 text-lg-end">
+					<p><a href="{{url_for('list_motels')}}" class="btn btn-primary text-white py-3 px-4">Xem Tất Cả</a></p>
+				</div>
+			</div>
+			<div class="row">
+
+				<div class="col-12">
+
+
+					<div class="property-slider-wrap">					
+						<div class="property-slider">
+							{% for motel in motels %}
+							<div class="property-item">
+
+								<a href="{{url_for('property_single',motel_id=motel.id)}}" class="img">
+									<img  src="{{url_for('static',filename='images/'+ motel.id|string +'.jpg')}}" alt="Image" class="img-fluid">
+								</a>
+
+								<div class="property-content">
+									<div class="price mb-2"><span>{{motel.price}} VND</span></div>
+									<div>
+										<span class="d-block mb-2 text-black-50">{{motel.address}}</span>
+										<span class="city d-block mb-3">{{motel.name}}</span>
+										
+										
+
+										<a href="{{url_for('property_single',motel_id=motel.id)}}" class="btn btn-primary py-2 px-3">Xem Thêm</a>
+									</div>
+								</div>
+							</div>
+							{% endfor %}
+
+
+						</div>
+
+
+						<div id="property-nav" class="controls" tabindex="0" aria-label="Carousel Navigation">
+							<span class="prev" data-controls="prev" aria-controls="property" tabindex="-1">Prev</span>
+							<span class="next" data-controls="next" aria-controls="property" tabindex="-1">Next</span>
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	
+
+
+	<div class="section sec-testimonials">
+		<div class="container">
+			<div class="row mb-5 align-items-center">
+				<div class="col-md-6">
+					<h2 class="font-weight-bold heading text-primary mb-4 mb-md-0">Bình luận mới nhất</h2>
+				</div>
+				<div class="col-md-6 text-md-end">
+					<div id="testimonial-nav">
+						<span class="prev" data-controls="prev">Prev</span>
+						
+						<span class="next" data-controls="next">Next</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-lg-4">
+					
+				</div>
+			</div>
+			<div class="testimonial-slider-wrap">
+				<div class="testimonial-slider">
+					{% for comment in comments %}
+					<div class="item">
+						<div class="testimonial">
+							<img src="http://127.0.0.1:5000/static/images/person_1-min.jpg" alt="Image" class="img-fluid-1 rounded-circle w-25 mb-4">
+							<div class="rate">
+								<span class="icon-star text-warning"></span>
+								<span class="icon-star text-warning"></span>
+								<span class="icon-star text-warning"></span>
+								<span class="icon-star text-warning"></span>
+								<span class="icon-star text-warning"></span>
+							</div>
+							<h3 class="h5 text-primary mb-4">
+								{% for user in users %}
+									{%  if user.id==comment.user_id %}
+										{{user.name}}
+									{% endif %}
+								{% endfor %}
+							</h3>
+							<blockquote>
+								<p>&ldquo;{{comment.content}}.&rdquo;</p>
+							</blockquote>
+							<p class="text-black-50">
+								{% for motel in motels %}
+									{%  if motel.id==comment.motel_id %}
+										{{motel.name}}
+									{% endif %}
+								{% endfor %}
+							</p>
+						</div>
+					</div>
+					{% endfor %}
+					<!-- <div class="item">
+						<div class="testimonial">
+							<img src="http://127.0.0.1:5000/static/images/person_2-min.jpg" alt="Image" class="img-fluid-1 rounded-circle w-25 mb-4">
+							<div class="rate">
+								<span class="icon-star text-warning"></span>
+								<span class="icon-star text-warning"></span>
+								<span class="icon-star text-warning"></span>
+								<span class="icon-star text-warning"></span>
+								<span class="icon-star text-warning"></span>
+							</div>
+							<h3 class="h5 text-primary mb-4">Mike Houston</h3>
+							<blockquote>
+								<p>&ldquo;Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.&rdquo;</p>
+							</blockquote>
+							<p class="text-black-50">Designer, Co-founder</p>
+						</div>
+					</div>
+
+					<div class="item">
+						<div class="testimonial">
+							<img src="http://127.0.0.1:5000/static/images/person_3-min.jpg" alt="Image" class="img-fluid-1 rounded-circle w-25 mb-4">
+							<div class="rate">
+								<span class="icon-star text-warning"></span>
+								<span class="icon-star text-warning"></span>
+								<span class="icon-star text-warning"></span>
+								<span class="icon-star text-warning"></span>
+								<span class="icon-star text-warning"></span>
+							</div>
+							<h3 class="h5 text-primary mb-4">Cameron Webster</h3>
+							<blockquote>
+								<p>&ldquo;Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.&rdquo;</p>
+							</blockquote>
+							<p class="text-black-50">Designer, Co-founder</p>
+						</div>
+					</div>
+
+					<div class="item">
+						<div class="testimonial">
+							<img src="http://127.0.0.1:5000/static/images/person_4-min.jpg" alt="Image" class="img-fluid-1 rounded-circle w-25 mb-4">
+							<div class="rate">
+								<span class="icon-star text-warning"></span>
+								<span class="icon-star text-warning"></span>
+								<span class="icon-star text-warning"></span>
+								<span class="icon-star text-warning"></span>
+								<span class="icon-star text-warning"></span>
+							</div>
+							<h3 class="h5 text-primary mb-4">Dave Smith</h3>
+							<blockquote>
+								<p>&ldquo;Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.&rdquo;</p>
+							</blockquote>
+							<p class="text-black-50">Designer, Co-founder</p>
+						</div>
+					</div> -->
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="section section-4 bg-light">
+		<div class="container">
+			<div class="row justify-content-center  text-center mb-5">
+				<div class="col-lg-5">
+					<h2 class="font-weight-bold heading text-primary mb-4">Hãy Tìm Ngôi Nhà Hoàn Hảo  </h2>
+					<p class="text-black-50">Không có gì khiến tôi thích thú hơn là về căn hộ của mình, đóng cửa lại và nấu bữa tối nhỏ cho người tôi thương. Căn hộ của tôi thực sự là một thiên đường. Đó là tổ ấm nơi có thể vỗ về và chữa lành mọi tổn thương trong tôi.</p>
+				</div>
+			</div>
+			<div class="row justify-content-between mb-5">
+				<div class="col-lg-7 mb-5 mb-lg-0 order-lg-2">
+					<div class="img-about dots">
+						<img src="http://127.0.0.1:5000/static/images/hero_bg_3.jpg" alt="Image" class="img-fluid-1">
+					</div>
+				</div>
+				<div class="col-lg-4">
+					<div class="d-flex feature-h">
+						<span class="wrap-icon me-3">
+							<span class="icon-home2"></span>
+						</span>
+						<div class="feature-text">
+							<h3 class="heading">2M Căn Hộ</h3>
+							<p class="text-black-50">Doanh nghiệp hàng đầu cung cấp nhà ở tại Việt Nam</p>   
+						</div>
+					</div>
+
+					<div class="d-flex feature-h">
+						<span class="wrap-icon me-3">
+							<span class="icon-person"></span>
+						</span>
+						<div class="feature-text">
+							<h3 class="heading">Doanh Nghiệp Hàng Đầu</h3>
+							<p class="text-black-50">kinh nghiệm trên 10 năm làm việc trong lĩnh vực có uy tín cao</p>   
+						</div>
+					</div>
+
+					<div class="d-flex feature-h">
+						<span class="wrap-icon me-3">
+							<span class="icon-security"></span>
+						</span>
+						<div class="feature-text">
+							<h3 class="heading">Giấy tờ hợp pháp</h3>
+							<p class="text-black-50">Phương châm uy tín là số 1 luôn đầy đủ hợp đồng pháp lý cho mỗi khách hàng</p>   
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row section-counter mt-5">
+				<div class="col-6 col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+					<div class="counter-wrap mb-5 mb-lg-0">
+						<span class="number"><span class="countup text-primary">100000</span></span>
+						<span class="caption text-black-50">Người Sử Dụng sản phẩm</span>
+					</div>
+				</div>
+				<div class="col-6 col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
+					<div class="counter-wrap mb-5 mb-lg-0">
+						<span class="number"><span class="countup text-primary">20000</span></span>
+						<span class="caption text-black-50"> Đối tác </span>
+					</div>
+				</div>
+				<div class="col-6 col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="500">
+					<div class="counter-wrap mb-5 mb-lg-0">
+						<span class="number"><span class="countup text-primary">20000000</span></span>
+						<span class="caption text-black-50"> Sản Phẩm</span>
+					</div>
+				</div>
+				<div class="col-6 col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="600">
+					<div class="counter-wrap mb-5 mb-lg-0">
+						<span class="number"><span class="countup text-primary">10000</span></span>
+						<span class="caption text-black-50"> Đại lý </span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="section">
+		<div class="row justify-content-center footer-cta" data-aos="fade-up">
+			<div class="col-lg-7 mx-auto text-center">
+				<h2 class="mb-4 ">Hãy Trở Thành Khách Hàng Của chúng Tôi Ngay Bây Giờ</h2>
+				<p><a href="#" target="_blank" class="btn btn-primary text-white py-3 px-4">Hãy Cho Chúng Tôi Thêm thông Tin Để Có Thể Hỗ TRợ Tìm Căn Hộ Ưng Ý NHất</a></p>
+			</div> <!-- /.col-lg-7 -->
+		</div> <!-- /.row -->
+	</div>
+
+	<div class="section section-5 bg-light">
+		<div class="container">
+			<div class="row justify-content-center  text-center mb-5">
+				<div class="col-lg-6 mb-5">
+					<h2 class="font-weight-bold heading text-primary mb-4">Người Phát Triển</h2>
+					<p class="text-black-50">Với Sứ Mệnh Hỗ Trợ Mọi Người Tìm Được Những Căn Nhà Hoàn Hảo</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0">
+					<div class="h-100 person">
+
+						<img src="http://127.0.0.1:5000/static/images/person_1-min.jpg" alt="Image"
+						class="img-fluid-1">
+
+						<div class="person-contents">
+							<h2 class="mb-0"><a href="#">Đại</a></h2>
+							<span class="meta d-block mb-3">Người Sáng Lập</span>
+							<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere officiis inventore cumque tenetur laboriosam, minus culpa doloremque odio, neque molestias?</p>
+
+							<ul class="social list-unstyled list-inline dark-hover">
+								<li class="list-inline-item"><a href="#"><span class="icon-twitter"></span></a></li>
+								<li class="list-inline-item"><a href="#"><span class="icon-facebook"></span></a></li>
+								<li class="list-inline-item"><a href="#"><span class="icon-linkedin"></span></a></li>
+								<li class="list-inline-item"><a href="#"><span class="icon-instagram"></span></a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0">
+					<div class="h-100 person">
+
+						<img src="http://127.0.0.1:5000/static/images/person_2-min.jpg" alt="Image"
+						class="img-fluid-1">
+
+						<div class="person-contents">
+							<h2 class="mb-0"><a href="#">Cường</a></h2>
+							<span class="meta d-block mb-3">Người Sáng Lập</span>
+							<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere officiis inventore cumque tenetur laboriosam, minus culpa doloremque odio, neque molestias?</p>
+
+							<ul class="social list-unstyled list-inline dark-hover">
+								<li class="list-inline-item"><a href="#"><span class="icon-twitter"></span></a></li>
+								<li class="list-inline-item"><a href="#"><span class="icon-facebook"></span></a></li>
+								<li class="list-inline-item"><a href="#"><span class="icon-linkedin"></span></a></li>
+								<li class="list-inline-item"><a href="#"><span class="icon-instagram"></span></a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0">
+					<div class="h-100 person">
+
+						<img src="http://127.0.0.1:5000/static/images/person_3-min.jpg" alt="Image"
+						class="img-fluid-1">
+
+						<div class="person-contents">
+							<h2 class="mb-0"><a href="#">Dũng</a></h2>
+							<span class="meta d-block mb-3">Người Sáng Lập</span>
+							<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere officiis inventore cumque tenetur laboriosam, minus culpa doloremque odio, neque molestias?</p>
+
+							<ul class="social list-unstyled list-inline dark-hover">
+								<li class="list-inline-item"><a href="#"><span class="icon-twitter"></span></a></li>
+								<li class="list-inline-item"><a href="#"><span class="icon-facebook"></span></a></li>
+								<li class="list-inline-item"><a href="#"><span class="icon-linkedin"></span></a></li>
+								<li class="list-inline-item"><a href="#"><span class="icon-instagram"></span></a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="site-footer">
+		<div class="container">
+
+			<div class="row">
+				<div class="col-lg-4">
+					<div class="widget">
+						<h3>Trụ Sở Chính</h3>
+						<address>Tầng 31, Keangnam Hanoi Landmark, Phạm Hùng, Nam Từ Liêm, Hà Nội</address>
+						<ul class="list-unstyled links">
+							<li><a href="tel://0232132131">+84 0232132131</a></li>
+							<li><a href="tel://0235454546">+84 0235454546</a></li>
+							<li><a href="mailto:BDSDDC@gmail.com">BDSDDC@gmail.com</a></li>
+						</ul>
+					</div> <!-- /.widget -->
+				</div> <!-- /.col-lg-4 -->
+				<div class="col-lg-4">
+					<div class="widget">
+						<h3>Liên Hệ</h3>
+						<ul class="list-unstyled float-start links">
+							<li><a href="#">Liên Hệ</a></li>
+							<li><a href="#">Thông báo</a></li>
+							<li><a href="#">Câu Hỏi Thường Gặp</a></li>
+							<li><a href="#">Báo Giá Hỗ Trợ</a></li>
+							<li><a href="#">Facebook</a></li>
+							<li><a href="#">Instagram</a></li>
+
+						</ul>
+						
+					</div> <!-- /.widget -->
+				</div> <!-- /.col-lg-4 -->
+				<div class="col-lg-4">
+					<div class="widget">
+						<h3>Links</h3>
+						<ul class="list-unstyled links">
+							<li><a href="#">Trang chủ</a></li>
+							<li><a href="#">Liên Hệ</a></li>
+							<li><a href="#">Giới Thiệu</a></li>
+						</ul>
+
+						<ul class="list-unstyled social">
+							<li><a href="#"><span class="icon-instagram"></span></a></li>
+							<li><a href="#"><span class="icon-twitter"></span></a></li>
+							<li><a href="#"><span class="icon-facebook"></span></a></li>
+							<li><a href="#"><span class="icon-linkedin"></span></a></li>
+							<li><a href="#"><span class="icon-pinterest"></span></a></li>
+							<li><a href="#"><span class="icon-dribbble"></span></a></li>
+						</ul>
+					</div> <!-- /.widget -->
+				</div> <!-- /.col-lg-4 -->
+			</div> <!-- /.row -->
+
+          </div>
+        </div>
+      </div> <!-- /.container -->
+    </div> <!-- /.site-footer -->
+
+
+
+    <!-- Preloader -->
+    <div id="overlayer"></div>
+    <div class="loader">
+    	<div class="spinner-border" role="status">
+    		<span class="visually-hidden">Loading...</span>
+    	</div>
+    </div>
+
+
+    <script src="http://127.0.0.1:5000/static/js/bootstrap.bundle.min.js"></script>
+    <script src="http://127.0.0.1:5000/static/js/tiny-slider.js"></script>
+    <script src="http://127.0.0.1:5000/static/js/aos.js"></script>
+    <script src="http://127.0.0.1:5000/static/js/navbar.js"></script>
+    <script src="http://127.0.0.1:5000/static/js/counter.js"></script>
+    <script src="http://127.0.0.1:5000/static/js/custom.js"></script>
+{% endblock %}
+  </body>
+  </html>

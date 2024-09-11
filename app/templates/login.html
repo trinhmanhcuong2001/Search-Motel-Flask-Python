@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../static/css/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css">
+</head>
+<body>
+<div class="container" id="container">
+	<div class="form-container sign-up-container">
+		<form action="{{url_for('register')}}" method="post">
+			<h1>Tạo Tài Khoản </h1>
+			<div class="social-container">
+				<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+				<a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+				<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+			</div>
+			<span>Sử dụng email của bạn để đăng ký</span>
+			<input type="text" placeholder="Nhập đầy đủ họ và tên" name = "name" required>
+			<input type="email" placeholder="Email"  name="email" required>
+			<input type="password" placeholder="Mật Khẩu" name="password" minlength=10 required>
+			<button>Đăng ký</button>
+		</form>
+	</div>
+	
+	<div class="form-container sign-in-container">
+		<form action="{{url_for('login')}}" method="post">
+			<h1>Đăng Nhập</h1>
+			{% with messages = get_flashed_messages() %}
+        		{% if messages %}
+            		<h4 style="color: red;">{{messages[0]}}</h4>
+        		{% endif %}
+    		{% endwith %}
+			<div class="social-container">
+				<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+				<a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+				<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+			</div>
+			
+			<input type="email" placeholder="Email" name="email" required>
+			<input type="password" placeholder="Password" name="password" required>
+			<a href="#">Quên mật khẩu?</a>
+			<button id="login" >Đăng nhập</button>
+		</form>
+	</div>
+	<div class="overlay-container">
+		<div class="overlay">
+			<div class="overlay-panel overlay-left">
+				<h1>Chào mừng trở lại</h1>
+				<p>Để giữ kết nối với chúng tôi, vui lòng đăng nhập bằng thông tin cá nhân của bạn</p>
+				<button class="ghost" id="signIn">Đăng nhập</button>
+			</div>
+			<div class="overlay-panel overlay-right">
+				<h1>Xin chào bạn!</h1>
+				<p>Nhập thông tin cá nhân của bạn và bắt đầu hành trình với chúng tôi</p>
+				<button class="ghost" id="signUp">Tạo tài Khoản</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer>
+
+</footer>
+
+<script src="../static/js/login.js"></script>
+</body>
+</html>

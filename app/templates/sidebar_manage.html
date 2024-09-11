@@ -1,0 +1,64 @@
+{% if current_user.is_admin=='True' %}
+<aside id="sidebar" class="sidebar">
+    <ul class="sidebar-nav" id="sidebar-nav">
+
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-journal-text"></i><span>Quản lí tin đăng</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          {% if request.path==url_for('add_motel') %}
+          <li>
+            <a href="{{url_for('add_motel')}}" class="active">
+              <i class="bi bi-circle"></i><span>Đăng mới</span>
+            </a>
+          </li>
+          {% else %}
+          <li>
+            <a href="{{url_for('add_motel')}}">
+              <i class="bi bi-circle"></i><span>Đăng mới</span>
+            </a>
+          </li>
+          {% endif %}
+          {% if request.path==url_for('newList') %}
+          <li>
+            <a href="{{url_for('newList')}}" class="active">
+              <i class="bi bi-circle"></i><span>Danh sách tin</span>
+            </a>
+          </li>
+          {% else %}
+          <li>
+            <a href="{{url_for('newList')}}">
+              <i class="bi bi-circle"></i><span>Danh sách tin</span>
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+      </li>
+      <!-- End Forms Nav -->
+
+      {% if request.path==url_for('update_account') %}
+      <li class="nav-item" >
+        <a class="nav-link " href="{{url_for('update_account')}}" class="active">
+          <i class="bi bi-person"></i>
+          <span>Tài Khoản </span>
+        </a>
+      </li>
+      {% else %}
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{{url_for('update_account')}}">
+          <i class="bi bi-person"></i>
+          <span>Tài Khoản </span>
+        </a>
+      </li>
+      {% endif %}
+      <!-- End Profile Page Nav -->
+
+    </ul>
+
+  </aside>
+  {% endif %}
+  {% block body %}
+
+  {% endblock %}

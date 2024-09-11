@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <!-- <title>Forms / Layouts </title> -->
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="/static/assets/img/favicon.png" rel="icon">
+  <link href="/static/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="/static/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/static/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/static/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="/static/assets/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="/static/assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="/static/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="/static/assets/vendor/simple-datatables/Admin.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="/static/assets/css/Admin.css" rel="stylesheet">
+</head>
+
+<body>
+
+   <!-- ======= Header ======= -->
+   <header id="header" class="header fixed-top d-flex align-items-center">
+
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="{{url_for('index')}}" class="logo d-flex align-items-center">
+        <!-- <img src="/static/assets/img/logo.png" alt=""> -->
+        <span class="d-none d-lg-block">DDC</span>
+      </a>
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+    </div><!-- End Logo -->
+
+    <!-- <div class="search-bar">
+      <form class="search-form d-flex align-items-center" method="POST" action="#">
+        <input type="text" name="query" placeholder="Search" title="Enter search keyword">
+        <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+      </form>
+    </div> -->
+    <!-- End Search Bar -->
+
+    <nav class="header-nav ms-auto">
+      <ul class="d-flex align-items-center">
+
+        <li class="nav-item d-block d-lg-none">
+          <a class="nav-link nav-icon search-bar-toggle " href="#">
+            <i class="bi bi-search"></i>
+          </a>
+        </li><!-- End Search Icon-->
+
+        </li><!-- End Messages Nav -->
+
+
+      </ul>
+    </nav><!-- End Icons Navigation -->
+
+  </header><!-- End Header -->
+
+  <!-- ======= Sidebar ======= -->
+  {% extends 'sidebar_manage.html' %}
+  <!-- End Sidebar-->
+{% block body %}
+  <main id="main" class="main">
+
+    <!-- Top Selling -->
+    <div class="col-12">
+      <div class="card top-selling overflow-auto">
+        <div class="card-body pb-0">
+          <h5 class="card-title">Danh sách tin</h5>
+          {% with messages = get_flashed_messages() %}
+            {% if messages %}
+              <h4 style="color: green;">{{messages[0]}}</h4>
+            {% endif %}
+          {% endwith %}
+          <table class="table table-borderless">
+            <thead>
+              <tr>
+                <th scope="col">Hình ảnh </th>
+                <th scope="col">TIêu Đề</th>
+                <th scope="col">Địa chỉ</th>
+                <th scope="col">SĐT</th>
+                <th scope="col">Mô tả</th>
+                <th scope="col">Giá</th>
+                <th scope="col"> Chức năng</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for motel in motels %}
+              <tr>
+                <th scope="row"><img src="{{url_for('static',filename='images/'+ motel.id|string +'.jpg')}}" alt="" class="img-fluid"></th>
+                <td><a href="#" class="text-primary fw-bold">{{motel.name}}</a></td>
+                <td>{{motel.address}}</td>
+                <td class="fw-bold">{{motel.phone_number}}</td>
+                <td>{{motel.describe}}</td>
+                <td>{{motel.price}}</td>
+                <td>
+                  <a href="{{url_for('updateList', motel_id=motel.id)}}" class="btn btn-primary btn-sm" title="Upload new profile image"><i class="bi bi-upload"></i></a>
+                  <span></span>
+                  <a href="{{url_for('deleteList', motel_id=motel.id)}}" class="btn btn-danger btn-sm" title="Remove my profile image"><i class="bi bi-trash"></i></a>
+                </td>
+              </tr>
+              {% endfor %}
+
+            </tbody>
+          </table>
+
+        </div>
+
+      </div>
+    </div><!-- End Top Selling -->
+    <div class="phan-trang">
+
+      {% if page > 1 %}
+    		<a href="{{ url_for('newList', page=page-1) }}">Prev</a>
+    	{% endif %}
+    	{% for p in range(1, num_pages+1) %}
+    		{% if p == page %}
+    			<a class="active" href="{{url_for('newList', page=page)}}">{{p}}</a>
+    		{% elif p > page - 3 and page + 3 > p %}
+    			<a href="{{ url_for('newList', page=p) }}">{{ p }}</a>
+    		{% endif %}
+    	{% endfor %}
+    	{% if num_pages > page%}
+    		<a href="{{ url_for('newList', page=page+1) }}">Next</a>
+    	{% endif %}
+    </div>
+  </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      &copy; Copyright <strong><span>NiceAdmin</span></strong>. All Rights Reserved
+    </div>
+    <div class="credits">
+      <!-- All the links in the footer should remain intact. -->
+      <!-- You can delete the links only if you purchased the pro version. -->
+      <!-- Licensing information: https://bootstrapmade.com/license/ -->
+      <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
+      Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+    </div>
+  </footer><!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="/static/assets/vendor/apexcharts/apexcharts.min.js"></script>
+  <script src="/static/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/chart.umd.js"></script>
+  <script src="/static/assets/vendor/echarts/echarts.min.js"></script>
+  <script src="/static/assets/vendor/quill/quill.min.js"></script>
+  <script src="/static/assets/vendor/simple-datatables/simple-datatables.js"></script>
+  <script src="/static/assets/vendor/tinymce/tinymce.min.js"></script>
+  <script src="/static/assets/vendor/php-email-form/validate.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="/static/assets/js/main.js"></script>
+{% endblock %}
+</body>
+
+</html>

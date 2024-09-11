@@ -1,0 +1,75 @@
+<div class="site-mobile-menu site-navbar-target">
+    <div class="site-mobile-menu-header">
+        <div class="site-mobile-menu-close">
+            <span class="icofont-close js-menu-toggle"></span>
+        </div>
+    </div>
+    <div class="site-mobile-menu-body"></div>
+</div>
+
+<nav class="site-nav">
+    <div class="container">
+        <div class="menu-bg-wrap">
+            <div class="site-navigation">
+                <a href="" class="logo m-0 float-start">DDC</a>
+                <ul class="js-clone-nav d-none d-lg-inline-block text-start site-menu float-end">
+                  {% if request.path==url_for('index') %}
+                    <li class="active"><a href="{{url_for('index')}}">Trang Chủ</a></li>
+                  {% else %}
+                    <li><a href="{{url_for('index')}}">Trang Chủ</a></li>
+                  {% endif %}
+                  {% if request.path==url_for('list_motels') %}
+                    <li class="active"><a href="{{url_for('list_motels')}}">Thuê Phòng Trọ</a></li>
+                  {% else %}
+                    <li ><a href="{{url_for('list_motels')}}">Thuê Phòng Trọ</a></li>
+                  {% endif %}
+ 
+                    {% if not current_user.is_authenticated %}
+                        <li><a href="{{url_for('login_register')}}">Đăng nhập</a></li>
+                    {% endif %}
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.is_admin == 'True' %}
+                            <li><a href="{{url_for('add_motel')}}">Quản lý</a></li>
+                        {% endif %}
+                        <li class="nav-item dropdown pe-3">
+
+                            <a class="nav-link nav-profile d-flex align-items-center pe-0 " href="#" data-bs-toggle="dropdown">
+                          <!-- <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" style="height: 30px;"> -->
+                          <span class="d-none d-md-block dropdown-toggle ps-2" style="margin-bottom: -13px;color: yellow;">{{current_user.name}}</span>
+                        </a><!-- End Profile Iamge Icon -->
+              
+                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+
+              
+                          <li>
+                            <a class="dropdown-item d-flex align-items-center" href="{{url_for('update_account')}}">
+                              <i class="bi bi-gear"></i>
+                              <span>Cài đặt tài khoản</span>
+                            </a>
+                          </li>
+
+                          <li>
+                            <a class="dropdown-item d-flex align-items-center" href="{{url_for('logout')}}">
+                              <i class="bi bi-box-arrow-right"></i>
+                              <span>Đăng xuất</span>
+                            </a>
+                          </li>
+              
+                        </ul>
+                        <!-- End Profile Dropdown Items -->
+                      </li>
+                      <!-- End Profile Nav -->
+                      {% endif %}
+                </ul>
+
+                <a href="#" class="burger light me-auto float-end mt-1 site-menu-toggle js-menu-toggle d-inline-block d-lg-none" data-toggle="collapse" data-target="#main-navbar">
+                    <span></span>
+                </a>
+
+            </div>
+        </div>
+    </div>
+</nav>
+{% block body %}
+
+{% endblock %}
